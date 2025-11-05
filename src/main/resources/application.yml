@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.poetry.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+
+jwt:
+  secret: poetry-spring-jwt-secret-key-2024-must-be-at-least-256-bits-long
+  expiration: 86400000
+
+deepseek:
+  api-key:
+  base-url: https://api.deepseek.com
+  model: deepseek-chat
