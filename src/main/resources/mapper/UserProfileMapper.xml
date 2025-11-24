@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.UserProfileMapper">
+
+    <resultMap id="profileMap" type="com.poetry.entity.UserProfile">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="avatar" column="avatar"/>
+        <result property="bio" column="bio"/>
+        <result property="location" column="location"/>
+        <result property="birthDate" column="birth_date"/>
+        <result property="preferredDynasty" column="preferred_dynasty"/>
+        <result property="favoriteStyle" column="favorite_style"/>
+        <result property="favoritePoemId" column="favorite_poem_id"/>
+        <result property="poemsReadCount" column="poems_read_count"/>
+        <result property="loginDays" column="login_days"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="profileMap">
+        SELECT * FROM user_profile WHERE user_id = #{userId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_profile (user_id, avatar, bio, location, birth_date,
+            preferred_dynasty, favorite_style, favorite_poem_id, poems_read_count, login_days)
+        VALUES (#{userId}, #{avatar}, #{bio}, #{location}, #{birthDate},
+            #{preferredDynasty}, #{favoriteStyle}, #{favoritePoemId}, #{poemsReadCount}, #{loginDays})
+    </insert>
+
+    <update id="update">
+        UPDATE user_profile
+        <set>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="bio != null">bio = #{bio},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="birthDate != null">birth_date = #{birthDate},</if>
+            <if test="preferredDynasty != null">preferred_dynasty = #{preferredDynasty},</if>
+            <if test="favoriteStyle != null">favorite_style = #{favoriteStyle},</if>
+            <if test="favoritePoemId != null">favorite_poem_id = #{favoritePoemId},</if>
+            <if test="poemsReadCount != null">poems_read_count = #{poemsReadCount},</if>
+            <if test="loginDays != null">login_days = #{loginDays},</if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="incrementLoginDays">
+        UPDATE user_profile SET login_days = login_days + 1 WHERE user_id = #{userId}
+    </update>
+</mapper>

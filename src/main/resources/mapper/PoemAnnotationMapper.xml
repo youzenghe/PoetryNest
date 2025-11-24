@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.PoemAnnotationMapper">
+
+    <resultMap id="annotationMap" type="com.poetry.entity.PoemAnnotation">
+        <id property="id" column="id"/>
+        <result property="poemId" column="poem_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="authorId" column="author_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="authorName" column="author_name"/>
+        <result property="poemTitle" column="poem_title"/>
+    </resultMap>
+
+    <select id="findById" resultMap="annotationMap">
+        SELECT a.*, u.username AS author_name, p.title AS poem_title
+        FROM poem_annotation a
+        LEFT JOIN user u ON a.author_id = u.id
+        LEFT JOIN poem p ON a.poem_id = p.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findByPoemId" resultMap="annotationMap">
+        SELECT a.*, u.username AS author_name, p.title AS poem_title
+        FROM poem_annotation a
+        LEFT JOIN user u ON a.author_id = u.id
+        LEFT JOIN poem p ON a.poem_id = p.id
+        WHERE a.poem_id = #{poemId}
+        ORDER BY a.created_at DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO poem_annotation (poem_id, title, content, author_id)
+        VALUES (#{poemId}, #{title}, #{content}, #{authorId})
+    </insert>
+
+    <update id="update">
+        UPDATE poem_annotation SET title = #{title}, content = #{content}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM poem_annotation WHERE id = #{id}
+    </delete>
+</mapper>

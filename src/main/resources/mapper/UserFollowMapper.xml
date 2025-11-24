@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.UserFollowMapper">
+
+    <resultMap id="followMap" type="com.poetry.entity.UserFollow">
+        <id property="id" column="id"/>
+        <result property="followerId" column="follower_id"/>
+        <result property="followingId" column="following_id"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="findByFollowerAndFollowing" resultMap="followMap">
+        SELECT * FROM user_follow WHERE follower_id = #{followerId} AND following_id = #{followingId}
+    </select>
+
+    <select id="countFollowers" resultType="int">
+        SELECT COUNT(*) FROM user_follow WHERE following_id = #{userId}
+    </select>
+
+    <select id="countFollowing" resultType="int">
+        SELECT COUNT(*) FROM user_follow WHERE follower_id = #{userId}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO user_follow (follower_id, following_id) VALUES (#{followerId}, #{followingId})
+    </insert>
+
+    <delete id="deleteByFollowerAndFollowing">
+        DELETE FROM user_follow WHERE follower_id = #{followerId} AND following_id = #{followingId}
+    </delete>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.FavoritePoetMapper">
+
+    <resultMap id="poetMap" type="com.poetry.entity.FavoritePoet">
+        <id property="id" column="id"/>
+        <result property="userProfileId" column="user_profile_id"/>
+        <result property="poetName" column="poet_name"/>
+        <result property="addedAt" column="added_at"/>
+    </resultMap>
+
+    <select id="findByProfileId" resultMap="poetMap">
+        SELECT * FROM favorite_poet WHERE user_profile_id = #{userProfileId} ORDER BY added_at DESC
+    </select>
+
+    <insert id="insert">
+        INSERT INTO favorite_poet (user_profile_id, poet_name) VALUES (#{userProfileId}, #{poetName})
+    </insert>
+
+    <delete id="deleteByProfileIdAndName">
+        DELETE FROM favorite_poet WHERE user_profile_id = #{userProfileId} AND poet_name = #{poetName}
+    </delete>
+
+    <delete id="deleteByProfileId">
+        DELETE FROM favorite_poet WHERE user_profile_id = #{userProfileId}
+    </delete>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.ArticleLikeMapper">
+
+    <resultMap id="likeMap" type="com.poetry.entity.ArticleLike">
+        <id property="id" column="id"/>
+        <result property="articleId" column="article_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="findByArticleAndUser" resultMap="likeMap">
+        SELECT * FROM article_like WHERE article_id = #{articleId} AND user_id = #{userId}
+    </select>
+
+    <select id="countByArticleId" resultType="int">
+        SELECT COUNT(*) FROM article_like WHERE article_id = #{articleId}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO article_like (article_id, user_id) VALUES (#{articleId}, #{userId})
+    </insert>
+
+    <delete id="deleteByArticleAndUser">
+        DELETE FROM article_like WHERE article_id = #{articleId} AND user_id = #{userId}
+    </delete>
+</mapper>

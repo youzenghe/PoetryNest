@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.UserFavoriteMapper">
+
+    <resultMap id="favoriteMap" type="com.poetry.entity.UserFavorite">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="poemId" column="poem_id"/>
+        <result property="favoriteTime" column="favorite_time"/>
+        <result property="poemTitle" column="poem_title"/>
+        <result property="poemAuthor" column="poem_author"/>
+        <result property="poemParagraphs" column="poem_paragraphs"/>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="favoriteMap">
+        SELECT uf.*, p.title AS poem_title, p.author AS poem_author, p.paragraphs AS poem_paragraphs
+        FROM user_favorite uf
+        JOIN poem p ON uf.poem_id = p.id
+        WHERE uf.user_id = #{userId}
+        ORDER BY uf.favorite_time DESC
+    </select>
+
+    <select id="findByUserAndPoem" resultMap="favoriteMap">
+        SELECT * FROM user_favorite WHERE user_id = #{userId} AND poem_id = #{poemId}
+    </select>
+
+    <select id="countByUserAndPoem" resultType="int">
+        SELECT COUNT(*) FROM user_favorite WHERE user_id = #{userId} AND poem_id = #{poemId}
+    </select>
+
+    <select id="findAll" resultMap="favoriteMap">
+        SELECT * FROM user_favorite
+    </select>
+
+    <insert id="insert">
+        INSERT INTO user_favorite (user_id, poem_id) VALUES (#{userId}, #{poemId})
+    </insert>
+
+    <delete id="deleteByUserAndPoem">
+        DELETE FROM user_favorite WHERE user_id = #{userId} AND poem_id = #{poemId}
+    </delete>
+</mapper>

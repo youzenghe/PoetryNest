@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.ArticleMapper">
+
+    <resultMap id="articleMap" type="com.poetry.entity.Article">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="authorId" column="author_id"/>
+        <result property="image" column="image"/>
+        <result property="viewsCount" column="views_count"/>
+        <result property="likesCount" column="likes_count"/>
+        <result property="commentsCount" column="comments_count"/>
+        <result property="isPublished" column="is_published"/>
+        <result property="isFeatured" column="is_featured"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="authorName" column="author_name"/>
+    </resultMap>
+
+    <select id="findById" resultMap="articleMap">
+        SELECT a.*, u.username AS author_name
+        FROM article a JOIN user u ON a.author_id = u.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findPublished" resultMap="articleMap">
+        SELECT a.*, u.username AS author_name
+        FROM article a JOIN user u ON a.author_id = u.id
+        WHERE a.is_published = 1
+        <if test="query != null and query != ''">
+            AND (a.title LIKE CONCAT('%', #{query}, '%')
+              OR a.content LIKE CONCAT('%', #{query}, '%')
+              OR u.username LIKE CONCAT('%', #{query}, '%'))
+        </if>
+        ORDER BY a.is_featured DESC, a.created_at DESC
+    </select>
+
+    <select id="findPopular" resultMap="articleMap">
+        SELECT a.*, u.username AS author_name
+        FROM article a JOIN user u ON a.author_id = u.id
+        WHERE a.is_published = 1
+        ORDER BY a.likes_count DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findByAuthorId" resultMap="articleMap">
+        SELECT a.*, u.username AS author_name
+        FROM article a JOIN user u ON a.author_id = u.id
+        WHERE a.author_id = #{authorId} AND a.is_published = 1
+        ORDER BY a.created_at DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO article (title, content, author_id, image)
+        VALUES (#{title}, #{content}, #{authorId}, #{image})
+    </insert>
+
+    <update id="incrementViews">
+        UPDATE article SET views_count = views_count + 1 WHERE id = #{id}
+    </update>
+
+    <update id="updateLikesCount">
+        UPDATE article SET likes_count = #{count} WHERE id = #{id}
+    </update>
+
+    <update id="updateCommentsCount">
+        UPDATE article SET comments_count = #{count} WHERE id = #{id}
+    </update>
+
+    <update id="updateArticle">
+        UPDATE article
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="isPublished != null">is_published = #{isPublished},</if>
+            <if test="isFeatured != null">is_featured = #{isFeatured},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM article WHERE id = #{id}
+    </delete>
+</mapper>

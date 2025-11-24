@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.UserPurchaseMapper">
+
+    <resultMap id="purchaseMap" type="com.poetry.entity.UserPurchase">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="poemId" column="poem_id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="amount" column="amount"/>
+        <result property="status" column="status"/>
+        <result property="payMethod" column="pay_method"/>
+        <result property="purchasedAt" column="purchased_at"/>
+        <result property="expiredAt" column="expired_at"/>
+        <result property="poemTitle" column="poem_title"/>
+        <result property="poemAuthor" column="poem_author"/>
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <select id="findById" resultMap="purchaseMap">
+        SELECT up.*, p.title AS poem_title, p.author AS poem_author, u.username
+        FROM user_purchase up
+        LEFT JOIN poem p ON up.poem_id = p.id
+        LEFT JOIN user u ON up.user_id = u.id
+        WHERE up.id = #{id}
+    </select>
+
+    <select id="findByUserId" resultMap="purchaseMap">
+        SELECT up.*, p.title AS poem_title, p.author AS poem_author, u.username
+        FROM user_purchase up
+        LEFT JOIN poem p ON up.poem_id = p.id
+        LEFT JOIN user u ON up.user_id = u.id
+        WHERE up.user_id = #{userId}
+        ORDER BY up.purchased_at DESC
+    </select>
+
+    <select id="findByUserAndPoem" resultMap="purchaseMap">
+        SELECT up.*, p.title AS poem_title, p.author AS poem_author, u.username
+        FROM user_purchase up
+        LEFT JOIN poem p ON up.poem_id = p.id
+        LEFT JOIN user u ON up.user_id = u.id
+        WHERE up.user_id = #{userId} AND up.poem_id = #{poemId}
+    </select>
+
+    <select id="findByOrderNo" resultMap="purchaseMap">
+        SELECT up.*, p.title AS poem_title, p.author AS poem_author, u.username
+        FROM user_purchase up
+        LEFT JOIN poem p ON up.poem_id = p.id
+        LEFT JOIN user u ON up.user_id = u.id
+        WHERE up.order_no = #{orderNo}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_purchase (user_id, poem_id, order_no, amount, status, pay_method, expired_at)
+        VALUES (#{userId}, #{poemId}, #{orderNo}, #{amount}, #{status}, #{payMethod}, #{expiredAt})
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE user_purchase SET status = #{status} WHERE id = #{id}
+    </update>
+
+    <select id="countByUserAndPoem" resultType="int">
+        SELECT COUNT(*) FROM user_purchase
+        WHERE user_id = #{userId} AND poem_id = #{poemId} AND status = 'SUCCESS'
+    </select>
+
+    <select id="findAll" resultMap="purchaseMap">
+        SELECT up.*, p.title AS poem_title, p.author AS poem_author, u.username
+        FROM user_purchase up
+        LEFT JOIN poem p ON up.poem_id = p.id
+        LEFT JOIN user u ON up.user_id = u.id
+        ORDER BY up.purchased_at DESC
+    </select>
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.PoemMapper">
+
+    <resultMap id="poemMap" type="com.poetry.entity.Poem">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="author" column="author"/>
+        <result property="paragraphs" column="paragraphs"/>
+    </resultMap>
+
+    <select id="findById" resultMap="poemMap">
+        SELECT * FROM poem WHERE id = #{id}
+    </select>
+
+    <select id="search" resultMap="poemMap">
+        SELECT * FROM poem
+        WHERE title LIKE CONCAT('%', #{query}, '%')
+           OR author LIKE CONCAT('%', #{query}, '%')
+           OR paragraphs LIKE CONCAT('%', #{query}, '%')
+    </select>
+
+    <select id="findByAuthor" resultMap="poemMap">
+        SELECT * FROM poem WHERE author = #{author}
+    </select>
+
+    <select id="findRandom" resultMap="poemMap">
+        SELECT * FROM poem ORDER BY RAND() LIMIT #{num}
+    </select>
+
+    <select id="findOneRandom" resultMap="poemMap">
+        SELECT * FROM poem ORDER BY RAND() LIMIT 1
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM poem
+    </select>
+
+    <select id="countByAuthor" resultType="long">
+        SELECT COUNT(*) FROM poem WHERE author = #{author}
+    </select>
+
+    <select id="findAll" resultMap="poemMap">
+        SELECT * FROM poem
+    </select>
+
+    <select id="findAllWithLimit" resultMap="poemMap">
+        SELECT * FROM poem LIMIT #{limit}
+    </select>
+
+    <select id="findByParagraphsContaining" resultMap="poemMap">
+        SELECT * FROM poem WHERE paragraphs LIKE CONCAT('%', #{keyword}, '%') LIMIT #{limit}
+    </select>
+
+    <select id="findDistinctAuthors" resultType="string">
+        SELECT DISTINCT author FROM poem
+    </select>
+
+    <select id="findByAuthorIn" resultMap="poemMap">
+        SELECT * FROM poem WHERE author IN
+        <foreach collection="authors" item="author" open="(" separator="," close=")">
+            #{author}
+        </foreach>
+        LIMIT #{limit}
+    </select>
+
+    <select id="findTopAuthors" resultType="map">
+        SELECT author, COUNT(*) as count FROM poem GROUP BY author ORDER BY count DESC LIMIT #{limit}
+    </select>
+
+    <select id="countDistinctAuthors" resultType="long">
+        SELECT COUNT(DISTINCT author) FROM poem
+    </select>
+
+    <delete id="deleteAll">
+        DELETE FROM poem
+    </delete>
+
+    <insert id="batchInsert">
+        INSERT INTO poem (title, author, paragraphs) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.title}, #{item.author}, #{item.paragraphs})
+        </foreach>
+    </insert>
+
+    <insert id="insertOne" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO poem (title, author, paragraphs)
+        VALUES (#{title}, #{author}, #{paragraphs})
+    </insert>
+
+    <update id="update">
+        UPDATE poem SET title = #{title}, author = #{author}, paragraphs = #{paragraphs}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM poem WHERE id = #{id}
+    </delete>
+</mapper>

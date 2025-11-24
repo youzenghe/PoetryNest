@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.LearningTaskMapper">
+
+    <resultMap id="taskMap" type="com.poetry.entity.LearningTask">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="poemId" column="poem_id"/>
+        <result property="title" column="title"/>
+        <result property="status" column="status"/>
+        <result property="deadline" column="deadline"/>
+        <result property="reminded" column="reminded"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="poemTitle" column="poem_title"/>
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <select id="findById" resultMap="taskMap">
+        SELECT lt.*, p.title AS poem_title, u.username
+        FROM learning_task lt
+        LEFT JOIN poem p ON lt.poem_id = p.id
+        LEFT JOIN user u ON lt.user_id = u.id
+        WHERE lt.id = #{id}
+    </select>
+
+    <select id="findByUserId" resultMap="taskMap">
+        SELECT lt.*, p.title AS poem_title, u.username
+        FROM learning_task lt
+        LEFT JOIN poem p ON lt.poem_id = p.id
+        LEFT JOIN user u ON lt.user_id = u.id
+        WHERE lt.user_id = #{userId}
+        ORDER BY lt.deadline ASC
+    </select>
+
+    <select id="findByUserIdAndStatus" resultMap="taskMap">
+        SELECT lt.*, p.title AS poem_title, u.username
+        FROM learning_task lt
+        LEFT JOIN poem p ON lt.poem_id = p.id
+        LEFT JOIN user u ON lt.user_id = u.id
+        WHERE lt.user_id = #{userId} AND lt.status = #{status}
+        ORDER BY lt.deadline ASC
+    </select>
+
+    <select id="findPendingBeforeDeadline" resultMap="taskMap">
+        SELECT lt.*, p.title AS poem_title, u.username
+        FROM learning_task lt
+        LEFT JOIN poem p ON lt.poem_id = p.id
+        LEFT JOIN user u ON lt.user_id = u.id
+        WHERE lt.status IN ('PENDING', 'IN_PROGRESS')
+          AND lt.reminded = 0
+          AND lt.deadline &lt;= #{deadline}
+          AND lt.deadline &gt; NOW()
+    </select>
+
+    <select id="findOverdueTasks" resultMap="taskMap">
+        SELECT lt.*, p.title AS poem_title, u.username
+        FROM learning_task lt
+        LEFT JOIN poem p ON lt.poem_id = p.id
+        LEFT JOIN user u ON lt.user_id = u.id
+        WHERE lt.status IN ('PENDING', 'IN_PROGRESS')
+          AND lt.deadline &lt; #{now}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO learning_task (user_id, poem_id, title, status, deadline)
+        VALUES (#{userId}, #{poemId}, #{title}, #{status}, #{deadline})
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE learning_task SET status = #{status} WHERE id = #{id}
+    </update>
+
+    <update id="updateReminded">
+        UPDATE learning_task SET reminded = #{reminded} WHERE id = #{id}
+    </update>
+</mapper>
